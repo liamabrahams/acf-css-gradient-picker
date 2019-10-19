@@ -15,137 +15,197 @@
 
 	function initialize_field( $field ) {
 
-		function controls() {
-			return $field.find('div[acf-css-gradient-picker-id]');
+		/**
+		*
+		*  Return input components from the field.
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*/
+
+		function returnGradientSelect() {
+			return $field.find('div.acf-css-gradient-picker__gradient-select').find('select');
 		}
 
-		function updateOutput() {
-			var $output = $field.find('div.acf-css-gradient-picker-output');
-			var $input1 = $field.find('div[acf-css-gradient-picker-id="1"]').find('input[type="text"]');
-			var $input2 = $field.find('div[acf-css-gradient-picker-id="2"]').find('input[type="text"]');
+		function returnAngleNumberInput() {
+			return $field.find('div.acf-css-gradient-picker__angle').find('input[type="number"]');
+		}
 
-			var $type = $field.find('div.acf-css-gradient-picker-type input[type="radio"]:checked').val();
+		function returnColourControls() {
+			return $field.find('div[acf-css-gradient-picker__colour-picker-id]');
+		}
 
-			var $stop1 = $field.find('div[acf-css-gradient-picker-id="1"]').find('input[type="number"]');
-			var $stop2 = $field.find('div[acf-css-gradient-picker-id="2"]').find('input[type="number"]');
+		function returnColourControlInputs() {
+			return $field.find('div[acf-css-gradient-picker__colour-picker-id]').find('input[type="text"]');
+		}
 
-			// $angle = 90;
-			var $angle = $field.find('div.acf-css-gradient-picker-angle').find('input[type="number"]');
-			$angle = $($angle).val();
+		function returnStopNumberInputs() {
+			return $field.find('div[acf-css-gradient-picker__stop-id]').find('input[type="number"]');
+		}
 
-			$gradient = $input1.val() + ' ' + $stop1.val() + '%, ' + $input2.val() + ' ' + $stop2.val() + '%';
-			if($type == 'radial') {
-					var $output_css = 'radial-gradient(circle, ' + $gradient + ')';
+		function returnGradientPreview() {
+			return $field.find('div.acf-css-gradient-picker-preview');
+		}
+
+
+
+		/**
+		*  returnValues
+		*
+		*  Return the values from the respective inputs
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*  @return array values
+		*/
+
+		function returnValues() {
+			// Get all the respective inputs
+			var $gradientSelect	= returnGradientSelect();
+			var $angleInput			= returnAngleNumberInput();
+			var $colourInputs		= returnColourControlInputs();
+			var $stopInputs			= returnStopNumberInputs();
+
+			// Get an array of their values
+			var values = {};
+			values['format']	=	$($gradientSelect).val();
+			values['angle']		=	$($angleInput).val();
+
+			values['colours'] = {};
+			values['colours']['colour1'] = $($colourInputs[0]).val();
+			values['colours']['colour2'] = $($colourInputs[1]).val();
+
+			values['stops'] = {};
+			values['stops']['stop1'] = $($stopInputs[0]).val();
+			values['stops']['stop2'] = $($stopInputs[1]).val();
+
+			return values;
+		}
+
+
+
+		/**
+		*  buildGradient
+		*
+		*  Build the gradient css.
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*  @param array values from the various inputs
+		*  @return gradient string
+		*/
+
+		function buildGradient(values) {
+			var gradient = '';
+			// Check if all components are available
+			if (
+				values['format'] !== null &&
+				values['angle'] !== null &&
+				values['colours']['colour1'] !== null &&
+				values['colours']['colour2'] !== null &&
+				values['stops']['stop1'] !== null &&
+				values['stops']['stop2'] !== null
+			) {
+				// Check the format
+				if (values['format'] === 'radial') {
+					gradient += 'radial-gradient(circle, ';
+				} else {
+					gradient += 'linear-gradient(' + values['angle'] + 'deg, ';
+				}
+
+				// Add colours
+				gradient += values['colours']['colour1'] + ' ' + values['stops']['stop1']  + '%, ';
+				gradient += values['colours']['colour2'] + ' ' + values['stops']['stop2']  + '%)';
+
+				return gradient;
 			} else {
-					var $output_css = 'linear-gradient(' + $angle + 'deg, ' + $gradient + ')';
+				return 'Error!';
 			}
-			$output.css('background', $output_css);
-
-			var $global_outputs = $field.find('div.global_inputs');
-			var $global_outputs_inputText = $($global_outputs).find('input[type="text"]');
-
-			var $save_str = '';
-			$save_str += 'type:' + $type + ';';
-			$save_str += 'angle:' + $angle + ';';
-			$save_str += 'colours:' + $input1.val() + ',' + $input2.val() + ';';
-			$save_str += 'stops:' + $stop1.val() + ',' + $stop2.val() + ';';
-
-			acf.val( $global_outputs_inputText, $save_str );
-			$global_outputs_inputText.val($save_str);
 		}
 
-		function loadPreview() {
-			var $global_outputs = $field.find('div.global_inputs');
-			var $global_outputs_inputText = $($global_outputs).find('input[type="text"]');
 
-			
-			var $type = $($global_outputs_inputText).val().match('(?<=type:)([a-zA-Z]+);')[1];
-			var $angle = $($global_outputs_inputText).val().match('(?<=angle:)([0-9]+);')[1];
-			var $colours = $($global_outputs_inputText).val().match('(?<=colours\:)(#[a-zA-Z0-9]+\,#[a-zA-Z0-9]+);')[1];
-			$colours = $colours.split(",");
-			var $stops = $($global_outputs_inputText).val().match('(?<=stops\:)([0-9]+\,[0-9]+);')[1];
-			$stops = $stops.split(",");
 
-			$css_output = buildOutput($type, $angle, $colours[0], $stops[0], $colours[1], $stops[1]);
+		/**
+		*  updateGradientPreview
+		*
+		*  Update the graident preview css
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*  @param string gradient generated by buildGradient
+		*
+		*/
 
-			console.log($css_output);
-			var $output = $field.find('div.acf-css-gradient-picker-output');
-			$($output).css('background', $css_output);
+		function updateGradientPreview(gradient) {
+			// Get the div
+			var $gradientPreview = returnGradientPreview();
+			// Apply the gradient
+			$($gradientPreview).css( 'background', gradient );
 		}
 
-		function onClickSelectType() {
-			var $selectType = $('.acf-css-gradient-picker-type input[type="radio"]');
-			$($selectType).click(function(e) {
-				var $label = $(this).parent('label');
-				var selected = $($label).hasClass('selected');
 
-				$('input[type="radio"]').parent('label').removeClass('selected');
-				$('input[type="radio"]').prop('checked', false);
-				$label.addClass('selected');
-				$(this).prop('checked', true);
 
-				setTimeout(function(){
-					updateOutput();
-				}, 1);
-			});
+		/**
+		*  handleOnChange
+		*
+		*  Handle the change to the inputs by loading the
+		*  new acf values and generating the new preview.
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*/
+
+		function handleOnChange() {
+			// Get each of the components
+			var $gradientSelect	= returnGradientSelect();
+			var $angleInput			= returnAngleNumberInput();
+			var $colourInputs		= returnColourControlInputs();
+			var $stopInputs			= returnStopNumberInputs();
+
+			// Get the values
+			var values = returnValues();
+
+			// Update the preview
+			var gradient = buildGradient(values);
+			updateGradientPreview(gradient);
+
+			console.log(values)
+			var $globalInput = $('div.global_input input[type="text"]');
+			$($globalInput).val(values);
+			acf.val($($globalInput), values);
+
 		}
 
-		function buildOutput($type, $angle, $colour1, $stop1, $colour2, $stop2) {
-
-			$output = '';
-			$output += $type + '-gradient';
-			if($type == "radial") {
-				$output += '(circle, ';
-			} else {
-				$output += '(' + $angle + 'deg, ';
-			}
-			$output += $colour1 + ' ' + $stop1 + '%, ';
-			$output += $colour2 + ' ' + $stop2 + '%)';
-			return $output;
-		}
-
-		function onChangeStopPosition() {
-			var $stop_field = $field.find('div[acf-css-gradient-picker-id]').find('input[type="number"]');
-			$($stop_field).change(function(){
-
-				setTimeout(function(){
-					updateOutput();
-				}, 1);
-			})
-		}
-
-		function onChangeAngle() {
-			var $angle_field = $field.find('div.acf-css-gradient-picker-angle').find('input[type="number"]');
-			$($angle_field).change(function(){
-				setTimeout(function(){
-					updateOutput();
-				}, 1);
-			})
-		}
-
-		// loadSelectType();
-		onClickSelectType();
-		onChangeAngle();
-		onChangeStopPosition();
-		loadPreview();
 
 
+		/**
+		*  buildColorPicker
+		*
+		*  Loads the colour picker. As per ACF Colour Picker
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*  @param	jQuery|object $el	jQuery element.
+		*  @return	None
+		*/
 
-		var $els = controls();
-
-		$els.each(function($index, $el) {
-			$el = $($el);
+		function buildColorPicker($el) {
+			// Search the element for the inputs
 			var $input			= $el.find('input[type="hidden"]');
 			var $inputText	= $el.find('input[type="text"]');
-
-			var onChange = function(e) {
+			// Build the function to handle the colour change
+			var onChange = function() {
 				// // timeout is required to ensure the $input val is correct
 				setTimeout(function(){
-					updateOutput();
-					// acf.val( $input, 'test' );
+					handleOnChange();
 				}, 1);
 			}
-
 			// args
 			var args = {
 				defaultColor: false,
@@ -154,11 +214,53 @@
 				change: onChange,
 				clear: onChange
 			};
-
+			// Load the colour picker
 			$inputText.wpColorPicker( args );
+		}
 
-		});
 
+
+		/**
+		*  buildColorPickers
+		*
+		* Wrapper to load all of the colour pickers.
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*/
+
+		function buildColorPickers() {
+			var $els = returnColourControls();
+
+			$els.each(function($index, $el) {
+				buildColorPicker($($el));
+			});
+		}
+
+
+
+		/**
+		*  buildGradientPreview
+		*
+		*  Inital load of the gradient preview
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*/
+
+
+		function buildGradientPreview() {
+			var values		= returnValues();
+			var gradient	=	buildGradient(values);
+			updateGradientPreview(gradient);
+		}
+
+
+
+		// Load all the good stuff
+		buildColorPickers();
+		buildGradientPreview();
 
 	}
 
