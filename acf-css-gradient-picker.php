@@ -68,7 +68,10 @@ class acf_css_gradient_picker_master {
 	function include_field( $version = false ) {
 
 		// support empty $version
-		if( !$version ) $version = 4;
+		// if( !$version ) $version = 4;
+
+		// Only use version 5 for now
+		$version = 5;
 
 		// load textdomain
 		load_plugin_textdomain( 'acf-gradient-picker', false, plugin_basename( dirname( __FILE__ ) ) . '/lang' );

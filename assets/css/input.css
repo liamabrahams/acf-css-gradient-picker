@@ -2,6 +2,55 @@
   box-shadow: 0 1px 0 #cccccc;
   border: 1px solid #cccccc;
   border-radius: 3px;
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  min-height: 200px;
+}
+
+.acf-field-css-gradient-picker .acf-row {
+  display: flex;
+}
+
+.acf-field-css-gradient-picker .acf-row .acf-column-50 {
+  width: 100%;
+}
+
+.acf-field-css-gradient-picker .acf-row h4 {
+  font-weight: normal;
+  margin-top: 0;
+  font-style: italic;
+}
+
+.acf-field-css-gradient-picker .acf-row .acf-column-row {
+  display: flex;
+  margin-top: 20px;
+}
+
+.acf-field-css-gradient-picker .acf-row .acf-column-row:first-of-type {
+  margin-top: 0;
+}
+
+.acf-field-css-gradient-picker .acf-column-row-col-50 {
+  width: 50%;
+}
+
+.acf-field-css-gradient-picker .acf-column-row-col--first {
+  padding-right: 15px;
+}
+
+.acf-field-css-gradient-picker .acf-column-row-col--last {
+  padding-left: 15px;
+}
+
+@media screen and (min-width: 768px)  {
+  .acf-row .acf-column-50 {
+    width: 50%;
+  }
+
+  .acf-row .acf-column--first {
+    padding-right: 15px
+  }
+
+  .acf-row .acf-column--last {
+    padding-left: 15px
+  }
 }

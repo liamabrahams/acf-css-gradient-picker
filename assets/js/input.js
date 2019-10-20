@@ -71,15 +71,15 @@
 			// Get an array of their values
 			var values = {};
 			values['format']	=	$($gradientSelect).val();
-			values['angle']		=	$($angleInput).val();
+			values['angle']		=	parseInt($($angleInput).val());
 
 			values['colours'] = {};
 			values['colours']['colour1'] = $($colourInputs[0]).val();
 			values['colours']['colour2'] = $($colourInputs[1]).val();
 
 			values['stops'] = {};
-			values['stops']['stop1'] = $($stopInputs[0]).val();
-			values['stops']['stop2'] = $($stopInputs[1]).val();
+			values['stops']['stop1'] = parseInt($($stopInputs[0]).val());
+			values['stops']['stop2'] = parseInt($($stopInputs[1]).val());
 
 			return values;
 		}
@@ -150,6 +150,40 @@
 
 
 		/**
+		*  updateInputs
+		*
+		*  Handle changes to the non colour inputs.
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*/
+
+		function updateInputs() {
+			var $gradientSelect	= returnGradientSelect();
+			var $angleInput			= returnAngleNumberInput();
+			var $stopInputs			= returnStopNumberInputs();
+
+			$gradientSelect.change(function() {
+				runOnChange();
+			});
+
+			$angleInput.change(function() {
+				runOnChange();
+			});
+
+			$($stopInputs[0]).change(function() {
+				runOnChange();
+			});
+
+			$($stopInputs[1]).change(function() {
+				runOnChange();
+			});
+		}
+
+
+
+		/**
 		*  handleOnChange
 		*
 		*  Handle the change to the inputs by loading the
@@ -174,11 +208,10 @@
 			var gradient = buildGradient(values);
 			updateGradientPreview(gradient);
 
-			console.log(values)
-			var $globalInput = $('div.global_input input[type="text"]');
-			$($globalInput).val(values);
-			acf.val($($globalInput), values);
-
+			// Update the value
+			var $globalInput = $('div.global_input input[type="hidden"]');
+			$($globalInput).val(JSON.stringify(values));
+			acf.val($($globalInput), JSON.stringify(values));
 		}
 
 
@@ -202,9 +235,7 @@
 			// Build the function to handle the colour change
 			var onChange = function() {
 				// // timeout is required to ensure the $input val is correct
-				setTimeout(function(){
-					handleOnChange();
-				}, 1);
+				runOnChange();
 			}
 			// args
 			var args = {
@@ -216,6 +247,23 @@
 			};
 			// Load the colour picker
 			$inputText.wpColorPicker( args );
+		}
+
+
+		/**
+		*  runOnChange
+		*
+		*  Function to wrap the onchange in setTimeout.
+		*
+		*  @date	19/10/19
+		*  @since	5.6.5
+		*
+		*/
+
+		function runOnChange() {
+			setTimeout(function(){
+				handleOnChange();
+			}, 1);
 		}
 
 
@@ -261,7 +309,7 @@
 		// Load all the good stuff
 		buildColorPickers();
 		buildGradientPreview();
-
+		updateInputs();
 	}
 
 

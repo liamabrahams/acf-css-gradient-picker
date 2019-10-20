@@ -62,25 +62,16 @@ class acf_css_gradient_picker extends acf_field {
 		*/
 
 		$this->defaults = array(
-			'font_size'	=> 14,
-			'value'	=> array(
-				'format'	=> array(
-					'value' => 'linear',
-				),
-				'angle'	=> array(
-					'value' => 90,
-				),
+			'default_value' => array(
+				'format'	=> 'linear',
+				'angle'	=> 90,
 				'colours'	=> array(
 					'colour1' => '#cccccc',
 					'colour2' => '#fff',
 				),
 				'stops'	=> array(
-					'stop1' => array(
-						'value' => 0,
-					),
-					'stop2' => array(
-						'value' => 100,
-					),
+					'stop1' => 0,
+					'stop2'=> 100,
 				),
 			),
 		);
@@ -167,43 +158,38 @@ class acf_css_gradient_picker extends acf_field {
 		*  This will show what data is available
 		*/
 
-		// echo '<pre>';
-		// 	print_r( $field );
-		// echo '</pre>';
-
 		$input_number_keys = array( 'type', 'value', 'min', 'max', 'step');
 
 		// vars
 		$input = acf_get_sub_array( $field, array('id', 'class', 'name') );
 		$input_hidden = acf_get_sub_array( $field, array('name') );
 
-		# Get the full input
+		// Get the full input
 		$input_main = array_merge($input, array('value' => $field['value']));
 		// $input_hidden_main = array_merge($input_hidden, array('value' => $field['value']));
 
-		# Get the gradient format
+		// Get the gradient format
 		$format = $field['value']['format'];
-		$input_format = array_merge($format, $input, array('choices' => array('linear' => 'Linear', 'radial' => 'Radial')));
+		$input_format = array_merge(array('value' => $format), $input, array('choices' => array('linear' => 'Linear', 'radial' => 'Radial')));
 
-		# Get the angle
-		$atts_angle = acf_map_atts($input_number_keys, $field['value']['angle']);
-		$atts_angle = array_merge(acf_clean_atts( $atts_angle ), $input, array('min' => 0, 'max' => 360, 'step' => 1, 'type' => 'number',));
+		// Get the angle
+		$atts_angle = acf_map_atts($input_number_keys, array('value' => $field['value']['angle']));
+		$atts_angle = array_merge(acf_clean_atts( $atts_angle ), $input, array('min' => 0, 'max' => 360, 'step' => 1, 'type' => 'number', 'class' => 'acf-is-append'));
 
-		# Get colour1
+		// Get colour1
 		$input_colour1 = array_merge($input, array('value' => $field['value']['colours']['colour1']));
-		$input_colour1['name'] = 'colours["colour1"]';
 		$input_hidden_colour1 = array_merge($input_hidden, array('value' => $field['value']['colours']['colour1']));
 
-		# Get colour2
+	 	// Get colour2
 		$input_colour2 = array_merge($input, array('value' => $field['value']['colours']['colour2']));
 		$input_hidden_colour2 = array_merge($input_hidden, array('value' => $field['value']['colours']['colour2']));
 
-		# Get the stops
-		$atts_stop1 = acf_map_atts($input_number_keys, $field['value']['stops']['stop1']);
-		$atts_stop1 = array_merge(acf_clean_atts( $atts_stop1 ), $input, array('min' => 0, 'max' => 100, 'step' => 1, 'type' => 'number'));
+		// Get the stops
+		$atts_stop1 = acf_map_atts($input_number_keys, array('value' => $field['value']['stops']['stop1']));
+		$atts_stop1 = array_merge(acf_clean_atts( $atts_stop1 ), $input, array('min' => 0, 'max' => 100, 'step' => 1, 'type' => 'number', 'class' => 'acf-is-append'));
 
-		$atts_stop2 = acf_map_atts($input_number_keys, $field['value']['stops']['stop2']);
-		$atts_stop2 = array_merge(acf_clean_atts( $atts_stop2 ), $input, array('min' => 0, 'max' => 100, 'step' => 1, 'type' => 'number'));
+		$atts_stop2 = acf_map_atts($input_number_keys, array('value' => $field['value']['stops']['stop2']));
+		$atts_stop2 = array_merge(acf_clean_atts( $atts_stop2 ), $input, array('min' => 0, 'max' => 100, 'step' => 1, 'type' => 'number', 'class' => 'acf-is-append'));
 
 
 
@@ -213,56 +199,79 @@ class acf_css_gradient_picker extends acf_field {
 		// html
 		?>
 
-			<pre>
-				<?php print_r($field); ?>
-			</pre>
 
-			<div class="acf-input-wrap">
-				<div class="acf-css-gradient-picker__gradient-select">
-					<?php acf_select_input($input_format); ?>
+				<div class="acf-row">
+					<div class="acf-column-50 acf-column--first">
+						<div class="acf-column-row">
+							<div class="acf-column-row-col-50 acf-column-row-col--first">
+								<h4>Gradient Type</h4>
+								<div class="acf-input-wrap">
+									<div class="acf-css-gradient-picker__gradient-select">
+										<?php acf_select_input($input_format); ?>
+									</div>
+								</div>
+							</div>
+							<div class="acf-column-row-col-50 acf-column-row-col--last">
+								<h4>Angle</h4>
+								<div class="acf-input">
+									<div class="acf-input-append">deg</div>
+									<div class="acf-css-gradient-picker__angle acf-input-wrap">
+										<?php acf_number_input($atts_angle); ?>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="acf-column-row">
+							<div class="acf-column-row-col-50 acf-column-row-col--first">
+								<h4>Colour 1</h4>
+								<div class="acf-input-wrap">
+									<div class="acf-css-gradient-picker__colour-picker" acf-css-gradient-picker__colour-picker-id="1">
+										<?php acf_hidden_input( $input_colour1 ); ?>
+										<?php acf_text_input( $input_hidden_colour1 ); ?>
+									</div>
+								</div>
+							</div>
+							<div class="acf-column-row-col-50 acf-column-row-col--last">
+								<h4>Colour 1 Stop</h4>
+								<div class="acf-input">
+									<div class="acf-input-append">%</div>
+									<div class="acf-css-gradient-picker__stop acf-input-wrap" acf-css-gradient-picker__stop-id="1">
+										<?php acf_number_input($atts_stop1); ?>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="acf-column-row">
+							<div class="acf-column-row-col-50 acf-column-row-col--first">
+								<div class="acf-input-wrap">
+									<div class="acf-css-gradient-picker__colour-picker" acf-css-gradient-picker__colour-picker-id="2">
+										<h4>Colour 2</h4>
+										<?php acf_hidden_input( $input_colour2 ); ?>
+										<?php acf_text_input( $input_hidden_colour2 ); ?>
+									</div>
+								</div>
+							</div>
+							<div class="acf-column-row-col-50 acf-column-row-col--last">
+								<h4>Colour 2 Stop</h4>
+								<div class="acf-input">
+									<div class="acf-input-append">%</div>
+									<div class="acf-css-gradient-picker__stop acf-input-wrap" acf-css-gradient-picker__stop-id="2">
+										<?php acf_number_input($atts_stop2); ?>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="acf-column-50 acf-column--last">
+						<h4>Preview</h4>
+						<div class="acf-css-gradient-picker-preview"></div>
+					</div>
 				</div>
-			</div>
-
-			<div class="acf-input-wrap">
-				<div class="acf-css-gradient-picker__angle">
-					<?php acf_number_input($atts_angle); ?>
+				<div class="global_input">
+					<?php acf_hidden_input( $input_main ); ?>
 				</div>
-			</div>
-
-			<div class="acf-input-wrap">
-				<div class="acf-css-gradient-picker__colour-picker" acf-css-gradient-picker__colour-picker-id="1">
-					<?php acf_hidden_input( $input_colour1 ); ?>
-					<?php acf_text_input( $input_hidden_colour1 ); ?>
-				</div>
-			</div>
-
-			<div class="acf-input-wrap">
-				<div class="acf-css-gradient-picker__stop" acf-css-gradient-picker__stop-id="1">
-					<?php acf_number_input($atts_stop1); ?>%
-				</div>
-			</div>
-
-			<div class="acf-input-wrap">
-				<div class="acf-css-gradient-picker__colour-picker" acf-css-gradient-picker__colour-picker-id="2">
-					<?php acf_hidden_input( $input_colour2 ); ?>
-					<?php acf_text_input( $input_hidden_colour2 ); ?>
-				</div>
-			</div>
-
-			<div class="acf-input-wrap">
-				<div class="acf-css-gradient-picker__stop" acf-css-gradient-picker__stop-id="2">
-					<?php acf_number_input($atts_stop2); ?>%
-				</div>
-			</div>
-
-			<div class="acf-css-gradient-picker-preview"></div>
-
-			<div class="global_input">
-				<?php /* acf_hidden_input( $input_main ); */ ?>
-				<?php acf_text_input( $input_main ); ?>
-			</div>
-
-
 
 			<?php
 	}
@@ -466,10 +475,11 @@ class acf_css_gradient_picker extends acf_field {
 	*  @return	$value
 	*/
 
-	/*
+
 	function update_value( $value, $post_id, $field ) {
+		$value = json_decode(stripslashes($value), true );
 		return $value;
-	}*/
+	}
 
 
 
@@ -496,17 +506,29 @@ class acf_css_gradient_picker extends acf_field {
 			return $value;
 		}
 
-		$input = $value;
+		$gradient = '';
 
-		$value = '';
-		$value .= $input['type'] . '-gradient';
-		if($input['type'] == 'radial') {
-			$value .= '(circle, ';
-		} else {
-			$value .= '(' . $input['angle'] . 'deg, ';
+		if (
+			!empty($value['format']) &&
+			!empty($value['angle']) &&
+			!empty($value['colours']['colour1']) &&
+			!empty($value['colours']['colour2']) &&
+			is_numeric($value['stops']['stop1']) &&
+			is_numeric($value['stops']['stop2'])
+		) {
+			// Check the format
+			if ($value['format'] === 'radial') {
+				$gradient .= 'radial-gradient(circle, ';
+			} else {
+				$gradient .= 'linear-gradient(' . $value['angle'] . 'deg, ';
+			}
+
+			// Add colours
+			$gradient .= $value['colours']['colour1'] . ' ' . $value['stops']['stop1']  . '%, ';
+			$gradient .= $value['colours']['colour2'] . ' ' . $value['stops']['stop2']  . '%)';
 		}
-		$value .= $input['colour1'] . ' ' . $input['stop1'] . '%, ';
-		$value .= $input['colour2'] . ' ' . $input['stop2'] . '%)';
+		
+		$value['gradient'] = $gradient;
 
 		// return
 		return $value;
@@ -624,8 +646,7 @@ class acf_css_gradient_picker extends acf_field {
 
 
 	function update_field( $field ) {
-		PC::debug('this is a test line');
-		PC::debug($field);
+		$value = json_decode(stripslashes($value), true );
 		return $field;
 
 	}
