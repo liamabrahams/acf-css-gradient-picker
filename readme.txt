@@ -1,29 +1,46 @@
 === Advanced Custom Fields: FIELD_LABEL Field ===
-Contributors: AUTHOR_NAME
-Tags: PLUGIN_TAGS
-Requires at least: 3.6.0
-Tested up to: 4.9.0
-Stable tag: trunk
+Contributors: Liam Abrahams
+Tags: acf, gradient-picker
+Requires at least: 5.8.2
+Tested up to: 5.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 SHORT_DESCRIPTION
 
-== Description ==
+== Generate a CSS Gradient from a ACF field. ==
 
-EXTENDED_DESCRIPTION
+CSS Gradient Picker for ACF. Options to choose linear or gradient. Returns:
+
+```
+Array (
+  [format] => linear,
+  [angle] => 90,
+  [colours] => Array (
+    [colour1] => #cccccc,
+    [colour2] => #fff
+  ),
+  [stops] => Array (
+    [stop1] => 0,
+    [stop2] => 100
+  ),
+  [gradient] => linear-gradient(90deg, #cccccc 0%, #fff 100%)
+)
+```
+
+WARNING: This field won't work with the_field() as it is designed to return an array of data for a theme developer to use.
+
 
 = Compatibility =
 
 This ACF field type is compatible with:
 * ACF 5
-* ACF 4
 
 == Installation ==
 
-1. Copy the `acf-FIELD-NAME` folder into your `wp-content/plugins` folder
-2. Activate the FIELD_LABEL plugin via the plugins admin page
-3. Create a new field via ACF and select the FIELD_LABEL type
+1. Copy the `acf-css-gradient-picker` folder into your `wp-content/plugins` folder
+2. Activate the css-gradient-picker plugin via the plugins admin page
+3. Create a new field via ACF and select the css-gradient-picker type
 4. Read the description above for usage instructions
 
 == Changelog ==
